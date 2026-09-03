@@ -88,11 +88,16 @@ const state = {
 // INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
+    initHamburger();
+    initMobileFilters();
+    initNavScroll();
+    initModalsKeyboard();
     initHomeCategories();
     renderMarketplaceProducts();
     renderSwapOpportunities();
     renderMyListings();
     renderHistoryTable();
+    renderChatMessages();
     updateCartUI();
 });
 
@@ -106,32 +111,120 @@ function initNavigation() {
             navigateTo(targetView);
         });
     });
-
-    // Mobile Hamburger Toggle
-    const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('nav-menu');
-    hamburger.addEventListener('click', () => {
-        navMenu.classList.toggle('active');
-    });
 }
 
 function navigateTo(viewId) {
-    // Hide all views
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    
-    // Show selected view
+
     const target = document.getElementById(`view-${viewId}`);
     if(target) target.classList.add('active');
 
-    // Update Nav Link Active state
     document.querySelectorAll('.nav-link').forEach(l => {
         l.classList.toggle('active', l.getAttribute('data-view') === viewId);
     });
 
-    // Close Mobile Menu if open
-    document.getElementById('nav-menu').classList.remove('active');
-    
+    closeMobileMenu();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// HAMBURGER MENU
+function initHamburger() {
+    const hamburger = document.getElementById('hamburger');
+    const overlay = document.getElementById('nav-overlay');
+
+    hamburger.addEventListener('click', toggleMobileMenu);
+    overlay.addEventListener('click', closeMobileMenu);
+}
+
+function toggleMobileMenu() {
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    const overlay = document.getElementById('nav-overlay');
+    const isOpen = navMenu.classList.contains('active');
+
+    if (isOpen) {
+        closeMobileMenu();
+    } else {
+        navMenu.classList.add('active');
+        overlay.classList.add('active');
+        hamburger.classList.add('open');
+        hamburger.setAttribute('aria-expanded', 'true');
+        hamburger.setAttribute('aria-label', 'Fechar menu de navegação');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeMobileMenu() {
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    const overlay = document.getElementById('nav-overlay');
+
+    navMenu.classList.remove('active');
+    overlay.classList.remove('active');
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    hamburger.setAttribute('aria-label', 'Abrir menu de navegação');
+    document.body.style.overflow = '';
+}
+
+// MOBILE FILTER TOGGLE
+function initMobileFilters() {
+    const toggleBtn = document.getElementById('mobile-filter-toggle');
+    const sidebar = document.getElementById('filters-sidebar');
+
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-open');
+            const isOpen = sidebar.classList.contains('mobile-open');
+            toggleBtn.setAttribute('aria-expanded', isOpen);
+            if (isOpen) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        });
+
+        sidebar.addEventListener('click', (e) => {
+            if (e.target === sidebar && window.innerWidth <= 768) {
+                sidebar.classList.remove('mobile-open');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+}
+
+// NAVBAR SCROLL STATE
+function initNavScroll() {
+    const navbar = document.getElementById('navbar');
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                navbar.classList.toggle('scrolled', window.scrollY > 10);
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+}
+
+// MODALS KEYBOARD SUPPORT
+function initModalsKeyboard() {
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (document.getElementById('auth-modal').classList.contains('active')) {
+                closeAuthModal();
+            }
+            if (document.getElementById('details-modal').classList.contains('active')) {
+                closeDetailsModal();
+            }
+            const cartDrawer = document.getElementById('cart-drawer');
+            if (cartDrawer.classList.contains('active')) {
+                closeCart();
+            }
+        }
+    });
 }
 
 // HOME CATEGORIES RENDER
@@ -147,10 +240,10 @@ const categoriesData = [
 function initHomeCategories() {
     const container = document.getElementById('home-categories-grid');
     if(!container) return;
-    
+
     container.innerHTML = categoriesData.map(cat => `
-        <div class="category-card" onclick="filterByCategory('${cat.name}')">
-            <i class="fa-solid ${cat.icon}"></i>
+        <div class="category-card" role="listitem" tabindex="0" onclick="filterByCategory('${cat.name}')" onkeydown="if(event.key==='Enter')filterByCategory('${cat.name}')" aria-label="Filtrar por ${cat.name}">
+            <i class="fa-solid ${cat.icon}" aria-hidden="true"></i>
             <h4>${cat.name}</h4>
         </div>
     `).join('');
@@ -171,32 +264,32 @@ function renderMarketplaceProducts(items = state.products) {
     countLabel.textContent = `Exibindo ${items.length} anúncio(s) de materiais.`;
 
     if(items.length === 0) {
-        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Nenhum material encontrado com os filtros selecionados.</p>`;
+        container.innerHTML = `<div class="empty-state"><p>Nenhum material encontrado com os filtros selecionados.</p></div>`;
         return;
     }
 
     container.innerHTML = items.map(p => `
-        <div class="product-card">
+        <div class="product-card" role="listitem">
             <div class="product-img-box">
-                <img src="${p.image}" alt="${p.title}">
-                <button class="fav-btn ${state.favorites.includes(p.id) ? 'active' : ''}" onclick="toggleFavorite('${p.id}')">
-                    <i class="fa-solid fa-heart"></i>
+                <img src="${p.image}" alt="${p.title}" loading="lazy">
+                <button class="fav-btn ${state.favorites.includes(p.id) ? 'active' : ''}" onclick="toggleFavorite('${p.id}')" aria-label="${state.favorites.includes(p.id) ? 'Remover' : 'Adicionar'} ${p.title} aos favoritos">
+                    <i class="fa-solid fa-heart" aria-hidden="true"></i>
                 </button>
                 <span class="neg-badge">${p.type}</span>
             </div>
             <div class="product-body">
                 <h3 class="product-title">${p.title}</h3>
                 <div class="product-meta">
-                    <p><i class="fa-solid fa-boxes-stacked"></i> Qtd: <strong>${p.quantity}</strong></p>
-                    <p><i class="fa-solid fa-location-dot"></i> ${p.location}</p>
+                    <p><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i> Qtd: <strong>${p.quantity}</strong></p>
+                    <p><i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${p.location}</p>
                 </div>
                 <div class="product-price">
                     ${p.price > 0 ? `R$ ${p.price.toFixed(2)}` : 'Para Permuta'}
                 </div>
                 <div class="product-footer">
                     <button class="btn btn-outline btn-sm btn-block" onclick="openDetailsModal('${p.id}')">Ver Detalhes</button>
-                    <button class="btn btn-primary btn-sm" onclick="addToCart('${p.id}')" title="Adicionar ao Carrinho">
-                        <i class="fa-solid fa-cart-plus"></i>
+                    <button class="btn btn-primary btn-sm" onclick="addToCart('${p.id}')" aria-label="Adicionar ${p.title} ao carrinho">
+                        <i class="fa-solid fa-cart-plus" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
@@ -222,6 +315,15 @@ function applyMarketplaceFilters() {
     });
 
     renderMarketplaceProducts(filtered);
+
+    // Close mobile filters after applying
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('filters-sidebar');
+        if (sidebar) {
+            sidebar.classList.remove('mobile-open');
+            document.body.style.overflow = '';
+        }
+    }
 }
 
 function resetFilters() {
@@ -240,16 +342,16 @@ function renderSwapOpportunities() {
 
     const swapItems = state.products.filter(p => p.type.includes('Troca'));
     container.innerHTML = swapItems.map(p => `
-        <div class="product-card">
+        <div class="product-card" role="listitem">
             <div class="product-img-box">
-                <img src="${p.image}" alt="${p.title}">
+                <img src="${p.image}" alt="${p.title}" loading="lazy">
                 <span class="neg-badge">Aceita Troca</span>
             </div>
             <div class="product-body">
                 <h3 class="product-title">${p.title}</h3>
                 <p class="product-meta">O Vendedor busca: <strong>${p.swapTargets || 'Outros insumos têxteis'}</strong></p>
                 <button class="btn btn-primary btn-block btn-sm" onclick="startSwapNegotiation('${p.id}')">
-                    <i class="fa-solid fa-arrows-rotate"></i> Propor Troca
+                    <i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Propor Troca
                 </button>
             </div>
         </div>
@@ -321,7 +423,7 @@ function updateCartUI() {
     if(!container) return;
 
     if(state.cart.length === 0) {
-        container.innerHTML = `<p style="text-align:center; color: var(--text-muted); margin-top: 40px;">Seu carrinho está vazio.</p>`;
+        container.innerHTML = `<p class="empty-state">Seu carrinho está vazio.</p>`;
         if(subtotalEl) subtotalEl.textContent = "R$ 0,00";
         return;
     }
@@ -330,14 +432,14 @@ function updateCartUI() {
     container.innerHTML = state.cart.map((item, index) => {
         subtotal += item.price;
         return `
-            <div style="display:flex; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
-                <img src="${item.image}" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover;">
-                <div style="flex:1;">
-                    <h5 style="font-size:0.9rem;">${item.title}</h5>
-                    <small style="color:var(--text-muted);">${item.quantity}</small>
-                    <div style="font-weight:700; color:var(--primary);">R$ ${item.price.toFixed(2)}</div>
+            <div class="cart-item">
+                <img class="cart-item-img" src="${item.image}" alt="${item.title}" loading="lazy">
+                <div class="cart-item-info">
+                    <h5>${item.title}</h5>
+                    <small>${item.quantity}</small>
+                    <div class="cart-item-price">R$ ${item.price.toFixed(2)}</div>
                 </div>
-                <button class="btn-text" onclick="removeFromCart(${index})"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn-text cart-item-remove" onclick="removeFromCart(${index})" aria-label="Remover ${item.title} do carrinho"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
             </div>
         `;
     }).join('');
@@ -351,13 +453,21 @@ function removeFromCart(index) {
 }
 
 document.getElementById('cart-toggle').addEventListener('click', () => {
-    document.getElementById('cart-drawer').classList.add('active');
-    document.getElementById('cart-drawer-overlay').classList.add('active');
+    const drawer = document.getElementById('cart-drawer');
+    const overlay = document.getElementById('cart-drawer-overlay');
+    drawer.classList.add('active');
+    drawer.setAttribute('aria-hidden', 'false');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
 });
 
 function closeCart() {
-    document.getElementById('cart-drawer').classList.remove('active');
-    document.getElementById('cart-drawer-overlay').classList.remove('active');
+    const drawer = document.getElementById('cart-drawer');
+    const overlay = document.getElementById('cart-drawer-overlay');
+    drawer.classList.remove('active');
+    drawer.setAttribute('aria-hidden', 'true');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
 }
 
 function handleCheckout() {
@@ -403,9 +513,9 @@ function handleSendChatMessage(e) {
 
     // Auto simulated response
     setTimeout(() => {
-        state.chatMessages.push({ 
-            sender: 'other', 
-            text: 'Perfeito! Podemos agendar a retirada do material esta semana?', 
+        state.chatMessages.push({
+            sender: 'other',
+            text: 'Perfeito! Podemos agendar a retirada do material esta semana?',
             time: `${now.getHours()}:${String(now.getMinutes()+1).padStart(2, '0')}`
         });
         renderChatMessages();
@@ -414,10 +524,15 @@ function handleSendChatMessage(e) {
 
 // PROFILE TABS & HISTÓRICO
 function switchProfileTab(tabName) {
-    document.querySelectorAll('.profile-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.profile-tabs .tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-selected', 'false');
+    });
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-    event.target.classList.add('active');
+    const clickedBtn = event.currentTarget || event.target;
+    clickedBtn.classList.add('active');
+    clickedBtn.setAttribute('aria-selected', 'true');
     document.getElementById(`tab-${tabName}`).classList.add('active');
 }
 
@@ -426,11 +541,16 @@ function renderMyListings() {
     if(!container) return;
 
     const myList = state.products.filter(p => p.seller === state.currentUser.name || p.seller === "Têxtil Fibras do Brasil");
-    
+
+    if (myList.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>Você ainda não possui anúncios publicados.</p></div>';
+        return;
+    }
+
     container.innerHTML = myList.map(p => `
-        <div class="product-card">
+        <div class="product-card" role="listitem">
             <div class="product-img-box">
-                <img src="${p.image}">
+                <img src="${p.image}" alt="${p.title}" loading="lazy">
             </div>
             <div class="product-body">
                 <h4>${p.title}</h4>
@@ -464,45 +584,73 @@ function openDetailsModal(productId) {
 
     const body = document.getElementById('details-modal-body');
     body.innerHTML = `
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-            <img src="${p.image}" style="width:100%; height:300px; object-fit:cover; border-radius:12px;">
-            <div>
+        <div class="details-grid">
+            <img class="details-img" src="${p.image}" alt="${p.title}">
+            <div class="details-info">
                 <span class="badge-tag">${p.category}</span>
-                <h2 style="margin: 12px 0;">${p.title}</h2>
+                <h2>${p.title}</h2>
                 <p style="color:var(--text-muted); margin-bottom: 16px;">${p.description}</p>
                 <p><strong>Quantidade:</strong> ${p.quantity}</p>
                 <p><strong>Condição:</strong> ${p.condition}</p>
                 <p><strong>Localização:</strong> ${p.location}</p>
                 <p><strong>Anunciante:</strong> ${p.seller} (${p.userType})</p>
                 ${p.swapTargets ? `<p style="color:var(--accent-teal); margin-top:8px;"><strong>Troca Aceita por:</strong> ${p.swapTargets}</p>` : ''}
-                <div style="font-size:1.5rem; font-weight:800; color:var(--primary); margin: 20px 0;">
+                <div class="details-price">
                     ${p.price > 0 ? `R$ ${p.price.toFixed(2)}` : 'Disponível para Permuta'}
                 </div>
-                <button class="btn btn-primary btn-block" onclick="addToCart('${p.id}'); closeDetailsModal();">Adicionar ao Carrinho</button>
+                <button class="btn btn-primary btn-block" onclick="addToCart('${p.id}'); closeDetailsModal();">
+                    <i class="fa-solid fa-cart-plus" aria-hidden="true"></i> Adicionar ao Carrinho
+                </button>
             </div>
         </div>
     `;
 
-    document.getElementById('details-modal').classList.add('active');
+    const modal = document.getElementById('details-modal');
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    // Focus the close button for accessibility
+    const closeBtn = modal.querySelector('.modal-close');
+    if (closeBtn) closeBtn.focus();
 }
 
 function closeDetailsModal() {
-    document.getElementById('details-modal').classList.remove('active');
+    const modal = document.getElementById('details-modal');
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
 }
 
 function openAuthModal() {
-    document.getElementById('auth-modal').classList.add('active');
+    const modal = document.getElementById('auth-modal');
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    const closeBtn = modal.querySelector('.modal-close');
+    if (closeBtn) closeBtn.focus();
 }
 
 function closeAuthModal() {
-    document.getElementById('auth-modal').classList.remove('active');
+    const modal = document.getElementById('auth-modal');
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
 }
 
 function toggleAuthMode(mode) {
-    document.getElementById('tab-login-btn').classList.toggle('active', mode === 'login');
-    document.getElementById('tab-register-btn').classList.toggle('active', mode === 'register');
-    document.getElementById('form-login').classList.toggle('active', mode === 'login');
-    document.getElementById('form-register').classList.toggle('active', mode === 'register');
+    const loginBtn = document.getElementById('tab-login-btn');
+    const registerBtn = document.getElementById('tab-register-btn');
+    const loginForm = document.getElementById('form-login');
+    const registerForm = document.getElementById('form-register');
+
+    loginBtn.classList.toggle('active', mode === 'login');
+    registerBtn.classList.toggle('active', mode === 'register');
+    loginBtn.setAttribute('aria-selected', mode === 'login');
+    registerBtn.setAttribute('aria-selected', mode === 'register');
+    loginForm.classList.toggle('active', mode === 'login');
+    registerForm.classList.toggle('active', mode === 'register');
 }
 
 function handleAuthLogin(e) {
@@ -535,14 +683,18 @@ function showToast(message, type = "info") {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
+    toast.setAttribute('role', 'alert');
     toast.innerHTML = `
-        <i class="fa-solid fa-circle-info"></i>
+        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
         <span>${message}</span>
     `;
 
     container.appendChild(toast);
 
     setTimeout(() => {
-        toast.remove();
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
     }, 3500);
 }
