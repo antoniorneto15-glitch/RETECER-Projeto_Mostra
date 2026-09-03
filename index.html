@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RETECER — Economia Circular na Indústria Têxtil</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="brand-logo" onclick="navigateTo('home')">
+                <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 20C10 14.4772 14.4772 10 20 10C25.5228 10 30 14.4772 30 20C30 25.5228 25.5228 30 20 30" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M20 5C11.7157 5 5 11.7157 5 20C5 28.2843 11.7157 35 20 35C28.2843 35 35 28.2843 35 20" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 4"/>
+                    <circle cx="20" cy="20" r="4" fill="currentColor"/>
+                </svg>
+                <span class="logo-text">RETECER</span>
+            </a>
+
+            <nav class="nav-menu" id="nav-menu">
+                <a href="#home" class="nav-link active" data-view="home">Início</a>
+                <a href="#marketplace" class="nav-link" data-view="marketplace">Marketplace</a>
+                <a href="#trocas" class="nav-link" data-view="trocas">Trocas</a>
+                <a href="#anunciar" class="nav-link" data-view="anunciar">Anunciar</a>
+                <a href="#chat" class="nav-link" data-view="chat">Mensagens</a>
+                <a href="#perfil" class="nav-link" data-view="perfil">Perfil</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="icon-btn" id="btn-search-trigger" title="Buscar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <button class="icon-btn notification-btn" title="Notificações">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">2</span>
+                </button>
+                <button class="icon-btn cart-btn" id="cart-toggle" title="Carrinho">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span class="badge" id="cart-count">0</span>
+                </button>
+                <button class="btn btn-primary btn-sm" id="auth-btn" onclick="openAuthModal()">
+                    <i class="fa-regular fa-user"></i> <span>Entrar</span>
+                </button>
+                <button class="hamburger" id="hamburger" aria-label="Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTAINER DE NOTIFICAÇÕES FLOANTES (TOASTS) -->
+    <div id="toast-container"></div>
+
+    <!-- MAIN VIEWS -->
+    <main id="main-content">
+
+        <!-- VIEW: INÍCIO (HOME) -->
+        <section id="view-home" class="view active">
+            <!-- Hero Section -->
+            <div class="hero">
+                <div class="hero-container">
+                    <div class="hero-content">
+                        <span class="tag-pill"><i class="fa-solid fa-leaf"></i> Verificado pela ONU com as ODS 9, 12, 13 e 17!</span>
+                        <h1 class="hero-title">O futuro da indústria têxtil começa quando <span>nada é desperdiçado.</span></h1>
+                        <p class="hero-description">
+                            A RETECER conecta pessoas, empresas e indústrias para comprar, vender e trocar materiais têxteis, transformando excedentes industriais em novas oportunidades de mercado.
+                        </p>
+                        <div class="hero-cta">
+                            <button class="btn btn-primary btn-lg" onclick="navigateTo('marketplace')">
+                                <i class="fa-solid fa-store"></i> Explorar Marketplace
+                            </button>
+                            <button class="btn btn-outline btn-lg" onclick="navigateTo('anunciar')">
+                                <i class="fa-solid fa-plus-circle"></i> Anunciar Material
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hero-visual">
+                        <div class="hero-card-stack">
+                            <div class="hero-card shadow-lg">
+                                <img src="https://images.unsplash.com/photo-1604176354204-9268737828e4?auto=format&fit=crop&w=600&q=80" alt="Tecidos Têxteis">
+                                <div class="hero-card-info">
+                                    <span class="badge-tag">Lote Verificado</span>
+                                    <h4>Retalhos de Algodão Orgânico</h4>
+                                    <p>120 kg • São Paulo, SP</p>
+                                </div>
+                            </div>
+                            <div class="floating-badge badge-eco">
+                                <i class="fa-solid fa-recycle"></i>
+                                <div>
+                                    <strong>100% Circular</strong>
+                                    <small>Reutilização Garanta</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indicadores de Sustentabilidade -->
+            <section class="stats-section">
+                <div class="section-container grid-4">
+                    <div class="stat-card">
+                        <i class="fa-solid fa-weight-hanging stat-icon"></i>
+                        <h3 class="stat-number">12.450 <small>kg</small></h3>
+                        <p>Materiais Reutilizados</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-handshake stat-icon"></i>
+                        <h3 class="stat-number">1.280</h3>
+                        <p>Negociações Realizadas</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-users stat-icon"></i>
+                        <h3 class="stat-number">640</h3>
+                        <p>Usuários Conectados</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-industry stat-icon"></i>
+                        <h3 class="stat-number">320</h3>
+                        <p>Empresas Participantes</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Como Funciona -->
+            <section class="how-it-works">
+                <div class="section-container">
+                    <div class="section-header center">
+                        <span class="sub-title">Passo a Passo</span>
+                        <h2>Como funciona a RETECER?</h2>
+                        <p>Conectar a cadeia produtiva nunca foi tão simples e eficiente.</p>
+                    </div>
+                    <div class="grid-4 steps-grid">
+                        <div class="step-card">
+                            <div class="step-num">01</div>
+                            <div class="step-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                            <h3>Encontre</h3>
+                            <p>Pesquise materiais disponíveis como sobras, linhas, tecidos e aviamentos na plataforma.</p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-num">02</div>
+                            <div class="step-icon"><i class="fa-regular fa-comments"></i></div>
+                            <h3>Conecte</h3>
+                            <p>Entre em contato direto com vendedores, indústrias ou compradores via chat interno.</p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-num">03</div>
+                            <div class="step-icon"><i class="fa-solid fa-repeat"></i></div>
+                            <h3>Negocie</h3>
+                            <p>Compre, venda ou proponha trocas diretas com base na demanda das partes.</p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-num">04</div>
+                            <div class="step-icon"><i class="fa-solid fa-seedling"></i></div>
+                            <h3>Retecer</h3>
+                            <p>Dê uma nova vida aos recursos, evitando o descarte e reduzindo o impacto ambiental.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Categorias -->
+            <section class="categories-section">
+                <div class="section-container">
+                    <div class="section-header flex-between">
+                        <div>
+                            <h2>Categorias de Materiais</h2>
+                            <p>Navegue pelos insumos disponíveis para sua produção</p>
+                        </div>
+                        <button class="btn btn-link" onclick="navigateTo('marketplace')">Ver todas <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                    <div class="categories-grid" id="home-categories-grid">
+                        <!-- Gerado dinamicamente via JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- VIEW: MARKETPLACE -->
+        <section id="view-marketplace" class="view">
+            <div class="page-header">
+                <div class="section-container">
+                    <h1>Marketplace RETECER</h1>
+                    <p>Encontre materiais, descubra oportunidades e dê um novo destino aos recursos da indústria.</p>
+                    
+                    <!-- Search Bar -->
+                    <div class="search-bar-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="marketplace-search-input" placeholder="O que você está procurando? (ex: Algodão, Zíper, Linha...)">
+                        <button class="btn btn-primary" onclick="applyMarketplaceFilters()">Buscar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-container marketplace-layout">
+                <!-- Filtros Laterais -->
+                <aside class="filters-sidebar">
+                    <div class="filter-group-header">
+                        <h3><i class="fa-solid fa-sliders"></i> Filtros</h3>
+                        <button class="btn-text" onclick="resetFilters()">Limpar</button>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Categoria</label>
+                        <select id="filter-category" onchange="applyMarketplaceFilters()">
+                            <option value="all">Todas as Categorias</option>
+                            <option value="Algodão">Algodão</option>
+                            <option value="Tecidos">Tecidos</option>
+                            <option value="Linhas">Linhas</option>
+                            <option value="Aviamentos">Aviamentos</option>
+                            <option value="Retalhos">Retalhos</option>
+                            <option value="Fibras">Fibras</option>
+                            <option value="Sobras Industriais">Sobras Industriais</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Tipo de Negociação</label>
+                        <select id="filter-type" onchange="applyMarketplaceFilters()">
+                            <option value="all">Todos os Tipos</option>
+                            <option value="Venda">Venda</option>
+                            <option value="Troca">Troca</option>
+                            <option value="Venda ou Troca">Venda ou Troca</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Condição</label>
+                        <select id="filter-condition" onchange="applyMarketplaceFilters()">
+                            <option value="all">Qualquer Condição</option>
+                            <option value="Nova">Nova</option>
+                            <option value="Excelente">Excelente</option>
+                            <option value="Reaproveitável">Reaproveitável</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Tipo de Anunciante</label>
+                        <select id="filter-user-type" onchange="applyMarketplaceFilters()">
+                            <option value="all">Todos</option>
+                            <option value="Empresa / Indústria">Indústria / Empresa</option>
+                            <option value="Pessoa Física">Pessoa Física</option>
+                        </select>
+                    </div>
+                </aside>
+
+                <!-- Grid de Produtos -->
+                <div class="marketplace-content">
+                    <div class="marketplace-top-info">
+                        <span id="results-count">Exibindo anúncios...</span>
+                    </div>
+                    <div class="products-grid" id="products-container">
+                        <!-- Cards injetados via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: TROCAS -->
+        <section id="view-trocas" class="view">
+            <div class="page-header">
+                <div class="section-container">
+                    <h1>Plataforma Integrada de Trocas</h1>
+                    <p>Troque insumos excedentes diretamente com outras empresas e artesãos sem envolver dinheiro.</p>
+                </div>
+            </div>
+
+            <div class="section-container">
+                <!-- Wizard / Matcher de Troca -->
+                <div class="swap-matcher-card">
+                    <h3><i class="fa-solid fa-arrows-rotate"></i> Simulador de Combinado (Match)</h3>
+                    <p>Diga o que você possui parado no estoque e o que está precisando para sua produção:</p>
+                    
+                    <form id="swap-form" onsubmit="handleSwapSearch(event)" class="swap-form-grid">
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-box-open"></i> O que eu TENHO:</label>
+                            <input type="text" id="swap-have" placeholder="Ex: 500 kg de retalhos de algodão" required>
+                        </div>
+                        <div class="swap-icon-divider">
+                            <i class="fa-solid fa-right-left"></i>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-magnifying-glass"></i> O que eu PROCURO:</label>
+                            <input type="text" id="swap-want" placeholder="Ex: Linhas industriais ou zíperes" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Propor Troca na Rede</button>
+                    </form>
+                </div>
+
+                <!-- Lista de Oportunidades de Troca -->
+                <div class="section-header" style="margin-top: 40px;">
+                    <h2>Oportunidades de Troca Disponíveis</h2>
+                    <p>Anúncios abertos para permuta direta no setor</p>
+                </div>
+
+                <div class="products-grid" id="swap-opportunities-container">
+                    <!-- Preenchido via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: ANUNCIAR -->
+        <section id="view-anunciar" class="view">
+            <div class="page-header">
+                <div class="section-container">
+                    <h1>Cadastrar Novo Material</h1>
+                    <p>Anuncie seus excedentes para milhares de compradores e parceiros da indústria.</p>
+                </div>
+            </div>
+
+            <div class="section-container form-container">
+                <form id="publish-form" onsubmit="handlePublishListing(event)" class="modern-form">
+                    <div class="form-grid">
+                        <div class="form-group full">
+                            <label>Nome do Material / Título do Anúncio *</label>
+                            <input type="text" id="pub-title" placeholder="Ex: Lote de Retalhos de Algodão Cru" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Categoria *</label>
+                            <select id="pub-category" required>
+                                <option value="">Selecione...</option>
+                                <option value="Algodão">Algodão</option>
+                                <option value="Tecidos">Tecidos</option>
+                                <option value="Linhas">Linhas</option>
+                                <option value="Aviamentos">Aviamentos</option>
+                                <option value="Retalhos">Retalhos</option>
+                                <option value="Fibras">Fibras</option>
+                                <option value="Sobras Industriais">Sobras Industriais</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tipo de Negociação *</label>
+                            <select id="pub-type" required>
+                                <option value="Venda">Venda</option>
+                                <option value="Troca">Troca</option>
+                                <option value="Venda ou Troca">Venda ou Troca</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Quantidade Disponível *</label>
+                            <input type="text" id="pub-quantity" placeholder="Ex: 150 kg ou 50 unidades" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Preço Estimado (R$) *</label>
+                            <input type="number" step="0.01" id="pub-price" placeholder="0.00" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Condição do Insumo *</label>
+                            <select id="pub-condition" required>
+                                <option value="Nova">Nova</option>
+                                <option value="Excelente">Excelente / Sobra limpa</option>
+                                <option value="Reaproveitável">Reaproveitável / Retalho</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Localização (Cidade / UF) *</label>
+                            <input type="text" id="pub-location" placeholder="Ex: Blumenau, SC" required>
+                        </div>
+
+                        <div class="form-group full">
+                            <label>Caso aceite Troca, o que busca receber?</label>
+                            <input type="text" id="pub-swap-targets" placeholder="Ex: Aceito troca por botões ou zíperes industriais">
+                        </div>
+
+                        <div class="form-group full">
+                            <label>Descrição Detalhada *</label>
+                            <textarea id="pub-description" rows="4" placeholder="Descreva especificações técnicas, composição, estado de conservação e detalhes de lote..." required></textarea>
+                        </div>
+
+                        <div class="form-group full">
+                            <label>URL da Imagem do Material</label>
+                            <input type="url" id="pub-image" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1528458876861-544fd1761a91?auto=format&fit=crop&w=600&q=80">
+                            <small>Insira o link de uma imagem para representação visual no protótipo.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fa-solid fa-paper-plane"></i> Publicar Anúncio na RETECER
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- VIEW: CHAT -->
+        <section id="view-chat" class="view">
+            <div class="section-container chat-wrapper">
+                <!-- Sidebar Conversas -->
+                <div class="chat-sidebar">
+                    <div class="chat-sidebar-header">
+                        <h3>Mensagens</h3>
+                    </div>
+                    <div class="chat-threads-list" id="chat-threads-list">
+                        <!-- Threads via JS -->
+                    </div>
+                </div>
+
+                <!-- Áreas de Chat Ativo -->
+                <div class="chat-main">
+                    <div class="chat-header" id="chat-active-header">
+                        <div class="user-avatar-sm">TF</div>
+                        <div>
+                            <h4 id="chat-target-name">Têxtil Fibras do Brasil</h4>
+                            <small id="chat-target-context">Interesse em: Lote de Retalhos de Algodão</small>
+                        </div>
+                    </div>
+
+                    <div class="chat-messages" id="chat-messages-container">
+                        <!-- Mensagens dinâmicas -->
+                    </div>
+
+                    <form class="chat-input-area" onsubmit="handleSendChatMessage(event)">
+                        <input type="text" id="chat-input-field" placeholder="Escreva sua mensagem..." required>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: PERFIL DA EMPRESA/USUÁRIO -->
+        <section id="view-perfil" class="view">
+            <div class="profile-header-bg">
+                <div class="section-container profile-header-content">
+                    <div class="profile-avatar">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h2>EcoTêxtil Soluções Sustentáveis</h2>
+                        <span class="user-badge"><i class="fa-solid fa-check-circle"></i> Indústria Verificada</span>
+                        <p><i class="fa-solid fa-location-dot"></i> Joinville, SC • Membro desde 2026</p>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="p-stat"><strong>28</strong><span>Negociações</span></div>
+                        <div class="p-stat"><strong>4.9 ★</strong><span>Avaliação</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-container">
+                <!-- Abas do Perfil -->
+                <div class="profile-tabs">
+                    <button class="tab-btn active" onclick="switchProfileTab('anuncios')">Meus Anúncios</button>
+                    <button class="tab-btn" onclick="switchProfileTab('historico')">Histórico de Negociações</button>
+                    <button class="tab-btn" onclick="switchProfileTab('favoritos')">Favoritos</button>
+                </div>
+
+                <!-- Conteúdo Aba: Anúncios -->
+                <div id="tab-anuncios" class="tab-content active">
+                    <div class="products-grid" id="my-listings-container">
+                        <!-- Meus anúncios via JS -->
+                    </div>
+                </div>
+
+                <!-- Conteúdo Aba: Histórico -->
+                <div id="tab-historico" class="tab-content">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Parceiro</th>
+                                    <th>Data</th>
+                                    <th>Tipo</th>
+                                    <th>Valor/Troca</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body">
+                                <!-- Gerado via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Conteúdo Aba: Favoritos -->
+                <div id="tab-favoritos" class="tab-content">
+                    <div class="products-grid" id="favorites-container">
+                        <!-- Favoritos via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- DRAWER: CARRINHO DE COMPRAS / INTERESSES -->
+    <div class="cart-drawer-overlay" id="cart-drawer-overlay" onclick="closeCart()"></div>
+    <aside class="cart-drawer" id="cart-drawer">
+        <div class="cart-drawer-header">
+            <h3><i class="fa-solid fa-basket-shopping"></i> Seu Carrinho / Interesse</h3>
+            <button class="icon-btn" onclick="closeCart()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="cart-drawer-body" id="cart-items-container">
+            <!-- Itens via JS -->
+        </div>
+        <div class="cart-drawer-footer">
+            <div class="cart-summary-line">
+                <span>Subtotal Estimado:</span>
+                <strong id="cart-subtotal">R$ 0,00</strong>
+            </div>
+            <button class="btn btn-primary btn-block btn-lg" onclick="handleCheckout()">
+                Finalizar Negociação
+            </button>
+        </div>
+    </aside>
+
+    <!-- MODAL: LOGIN / CADASTRO -->
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login-btn" onclick="toggleAuthMode('login')">Entrar</button>
+                <button class="auth-tab" id="tab-register-btn" onclick="toggleAuthMode('register')">Criar Conta</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="form-login" onsubmit="handleAuthLogin(event)" class="auth-form active">
+                <div class="form-group">
+                    <label>E-mail corporativo ou pessoal</label>
+                    <input type="email" placeholder="seu@email.com" required value="contato@ecotextil.com.br">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" placeholder="••••••••" required value="123456">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Entrar na Plataforma</button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="form-register" onsubmit="handleAuthRegister(event)" class="auth-form">
+                <div class="form-group">
+                    <label>Tipo de Conta</label>
+                    <select id="reg-type">
+                        <option value="Empresa / Indústria">Empresa / Indústria</option>
+                        <option value="Pessoa Física">Pessoa Física / Artesão</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nome Completo ou Razão Social</label>
+                    <input type="text" placeholder="Nome da empresa ou usuário" required>
+                </div>
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Criar Conta na RETECER</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: DETALHES DO MATERIAL -->
+    <div class="modal-overlay" id="details-modal">
+        <div class="modal-card modal-lg">
+            <button class="modal-close" onclick="closeDetailsModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div id="details-modal-body">
+                <!-- Conteúdo injetado via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="section-container footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="brand-logo footer-logo">
+                    <span class="logo-text">RETECER</span>
+                </a>
+                <p class="tagline">"Conectando materiais. Reduzindo desperdícios. Retecendo o futuro."</p>
+                <p class="eco-note"><i class="fa-solid fa-globe"></i> Construindo uma indústria têxtil mais circular e consciente.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Navegação</h4>
+                <ul>
+                    <li><a href="#home" onclick="navigateTo('home')">Início</a></li>
+                    <li><a href="#marketplace" onclick="navigateTo('marketplace')">Marketplace</a></li>
+                    <li><a href="#trocas" onclick="navigateTo('trocas')">Trocas Integradas</a></li>
+                    <li><a href="#perfil" onclick="navigateTo('perfil')">Perfil</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Sustentabilidade</h4>
+                <ul>
+                    <li><a href="#">Economia Circular</a></li>
+                    <li><a href="#">Relatório de Impacto</a></li>
+                    <li><a href="#">Parceiros Industriais</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="section-container">
+                <p>RETECER © 2026 — Projeto desenvolvido para fins educacionais e inovação têxtil.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
